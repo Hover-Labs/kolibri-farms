@@ -106,6 +106,8 @@ class FarmRewardReserve(sp.Contract):
 # Only run tests if this file is main.
 if __name__ == "__main__":
 
+  FA12 = sp.import_script_from_url("file:./test-helpers/fa12.py")
+
   ################################################################
   # initialize
   ################################################################
@@ -158,6 +160,84 @@ if __name__ == "__main__":
       sender = Addresses.GOVERNOR_ADDRESS,
       valid = False
     )    
+
+  ################################################################
+  # revoke
+  ################################################################
+
+  @sp.add_test(name="revoke - can revoke")
+  def test():
+    scenario = sp.test_scenario()
+
+    # GIVEN a token contract
+    token = FA12.FA12(
+      admin = Addresses.GOVERNOR_ADDRESS
+    )
+    scenario += token
+
+    # AND a reserve contract
+    reserve = FarmRewardReserve(
+      rewardTokenAddress = token.address,
+      revokeAddress = Addresses.REVOKE_ADDRESS,
+    )
+    scenario += reserve
+
+    # AND the reserve contract has some tokens.
+    tokenAmount = 123456789
+    scenario += token.mint(
+      sp.record(
+        address = reserve.address,
+        value = tokenAmount
+      )
+    ).run(
+      sender = Addresses.GOVERNOR_ADDRESS
+    )
+
+    # WHEN revoke is called
+    revokeAmount = 500
+    scenario += reserve.revoke(revokeAmount).run(
+      sender = Addresses.GOVERNOR_ADDRESS
+    )
+
+    # THEN tokens are revoked
+    scenario.verify(token.data.balances[Addresses.REVOKE_ADDRESS].balance == revokeAmount)
+    scenario.verify(token.data.balances[reserve.address].balance == sp.as_nat(tokenAmount - revokeAmount))
+
+  @sp.add_test(name="revoke - fails if not called by governor")
+  def test():
+    scenario = sp.test_scenario()
+
+    # GIVEN a token contract
+    token = FA12.FA12(
+      admin = Addresses.GOVERNOR_ADDRESS
+    )
+    scenario += token
+
+    # AND a reserve contract
+    reserve = FarmRewardReserve(
+      rewardTokenAddress = token.address,
+      revokeAddress = Addresses.REVOKE_ADDRESS,
+    )
+    scenario += reserve
+
+    # AND the reserve contract has some tokens.
+    tokenAmount = 123456789
+    scenario += token.mint(
+      sp.record(
+        address = reserve.address,
+        value = tokenAmount
+      )
+    ).run(
+      sender = Addresses.GOVERNOR_ADDRESS
+    )
+
+    # WHEN revoke is called by someone other than the governor
+    # THEN the call fails
+    revokeAmount = 500
+    scenario += reserve.revoke(revokeAmount).run(
+      sender = Addresses.NULL_ADDRESS,
+      valid = False,
+    )
 
   sp.add_compilation_target("farm-reward-reserve", FarmRewardReserve())
 
