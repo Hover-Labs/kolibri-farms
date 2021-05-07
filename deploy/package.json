@@ -6,8 +6,7 @@
   "scripts": {
     "build": "npx tsc -d",
     "build-smart-contracts": "cd ../smart_contracts && ./compile.sh",
-    "deploy:edonet": "npm run build-smart-contracts && npm run deploy-no-build:edonet",
-    "deploy-no-build:edonet": "npm run build && ts-node src/deploy-edonet",
+    "deploy": "npm run build-smart-contracts && npm run deploy-no-build:edonet",
     "lint": "npx eslint . --ext .ts --fix"
   },
   "keywords": [],
@@ -35,7 +34,7 @@
     "@types/node": "^14.14.44",
     "bignumber.js": "^9.0.1",
     "bs58check": "^2.1.2",
-    "conseiljs": "5.0.8",
+    "conseiljs": "5.0.8-3",
     "conseiljs-softsigner": "^5.0.3",
     "form-data": "*",
     "libsodium-wrappers": "^0.7.8",

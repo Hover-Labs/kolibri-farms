@@ -10,17 +10,34 @@ import smartpy as sp
 class FarmRewardReserve(sp.Contract):
   def __init__(
     self,
-    governorAddress = sp.address("tz1abmz7jiCV2GH2u81LRrGgAFFgvQgiDiaf"),
     farmAddress = sp.address("tz1abmz7jiCV2GH2u81LRrGgAFFgvQgiDiaf"),
-    rewardTokenAddress = sp.address("tz1abmz7jiCV2GH2u81LRrGgAFFgvQgiDiaf"),
+    governorAddress = sp.address("tz1abmz7jiCV2GH2u81LRrGgAFFgvQgiDiaf"),
     revokeAddress = sp.address("tz1abmz7jiCV2GH2u81LRrGgAFFgvQgiDiaf"),
+    rewardTokenAddress = sp.address("tz1abmz7jiCV2GH2u81LRrGgAFFgvQgiDiaf"),
+    initialized = False,
   ):
     self.init(
-      governorAddress = governorAddress,
       farmAddress = farmAddress,
-      rewardTokenAddress = rewardTokenAddress,
+      governorAddress = governorAddress,
       revokeAddress = revokeAddress,
+      rewardTokenAddress = rewardTokenAddress,
+      initialized = initialized,
     )
+
+  # Initialize. May only be called once.
+  @sp.entry_point
+  def initialize(self, farmAddress):
+    sp.set_type(farmAddress, sp.TAddress)
+
+    # Only callable by the governor
+    sp.verify(sp.sender == self.data.governorAddress, "NOT_GOVERNOR")
+
+    # Only allowed to run once.
+    sp.verify(self.data.initialized == False)
+
+    # Initialize contract
+    self.data.initialized = True
+    self.data.farmAddress = farmAddress
 
   # Revoke the given number of tokens to the revoke address.
   @sp.entry_point
