@@ -1,0 +1,4 @@
+.smartpy_out
+.vscode
+build
+node_modules

@@ -1,0 +1,137 @@
+parameter (or (nat %giveRewardAllowance) (or (nat %revoke) (address %setGovernorContract)));
+storage   (pair (pair (address %farmAddress) (address %governorAddress)) (pair (address %revokeAddress) (address %rewardTokenAddress)));
+code
+  {
+    UNPAIR;     # @parameter : @storage
+    IF_LEFT
+      {
+        SWAP;       # @storage : @parameter%giveRewardAllowance
+        # == giveRewardAllowance ==
+        # sp.verify(sp.sender == self.data.governorAddress, message = 'NOT_GOVERNOR') # @storage : @parameter%giveRewardAllowance
+        DUP;        # @storage : @storage : @parameter%giveRewardAllowance
+        DUG 2;      # @storage : @parameter%giveRewardAllowance : @storage
+        CAR;        # pair (address %farmAddress) (address %governorAddress) : @parameter%giveRewardAllowance : @storage
+        CDR;        # address : @parameter%giveRewardAllowance : @storage
+        SENDER;     # address : address : @parameter%giveRewardAllowance : @storage
+        COMPARE;    # int : @parameter%giveRewardAllowance : @storage
+        EQ;         # bool : @parameter%giveRewardAllowance : @storage
+        IF
+          {}
+          {
+            PUSH string "NOT_GOVERNOR"; # string : @parameter%giveRewardAllowance : @storage
+            FAILWITH;   # FAILED
+          }; # @parameter%giveRewardAllowance : @storage
+        # sp.transfer(sp.record(spender = self.data.farmAddress, value = 0), sp.tez(0), sp.contract(sp.TRecord(spender = sp.TAddress, value = sp.TNat).layout(("spender", "value")), self.data.rewardTokenAddress, entry_point='approve').open_some()) # @parameter%giveRewardAllowance : @storage
+        NIL operation; # list operation : @parameter%giveRewardAllowance : @storage
+        DUP 3;      # @storage : list operation : @parameter%giveRewardAllowance : @storage
+        GET 4;      # address : list operation : @parameter%giveRewardAllowance : @storage
+        CONTRACT %approve (pair (address %spender) (nat %value)); # option (contract (pair (address %spender) (nat %value))) : list operation : @parameter%giveRewardAllowance : @storage
+        IF_SOME
+          {}
+          {
+            PUSH int 54; # int : list operation : @parameter%giveRewardAllowance : @storage
+            FAILWITH;   # FAILED
+          }; # @some : list operation : @parameter%giveRewardAllowance : @storage
+        PUSH mutez 0; # mutez : @some : list operation : @parameter%giveRewardAllowance : @storage
+        PUSH nat 0; # nat : mutez : @some : list operation : @parameter%giveRewardAllowance : @storage
+        DUP 6;      # @storage : nat : mutez : @some : list operation : @parameter%giveRewardAllowance : @storage
+        CAR;        # pair (address %farmAddress) (address %governorAddress) : nat : mutez : @some : list operation : @parameter%giveRewardAllowance : @storage
+        CAR;        # address : nat : mutez : @some : list operation : @parameter%giveRewardAllowance : @storage
+        PAIR %spender %value; # pair (address %spender) (nat %value) : mutez : @some : list operation : @parameter%giveRewardAllowance : @storage
+        TRANSFER_TOKENS; # operation : list operation : @parameter%giveRewardAllowance : @storage
+        CONS;       # list operation : @parameter%giveRewardAllowance : @storage
+        # sp.transfer(sp.record(spender = self.data.farmAddress, value = params), sp.tez(0), sp.contract(sp.TRecord(spender = sp.TAddress, value = sp.TNat).layout(("spender", "value")), self.data.rewardTokenAddress, entry_point='approve').open_some()) # list operation : @parameter%giveRewardAllowance : @storage
+        DUP 3;      # @storage : list operation : @parameter%giveRewardAllowance : @storage
+        GET 4;      # address : list operation : @parameter%giveRewardAllowance : @storage
+        CONTRACT %approve (pair (address %spender) (nat %value)); # option (contract (pair (address %spender) (nat %value))) : list operation : @parameter%giveRewardAllowance : @storage
+        IF_SOME
+          {}
+          {
+            PUSH int 54; # int : list operation : @parameter%giveRewardAllowance : @storage
+            FAILWITH;   # FAILED
+          }; # @some : list operation : @parameter%giveRewardAllowance : @storage
+        PUSH mutez 0; # mutez : @some : list operation : @parameter%giveRewardAllowance : @storage
+        DIG 3;      # @parameter%giveRewardAllowance : mutez : @some : list operation : @storage
+        DUP 5;      # @storage : @parameter%giveRewardAllowance : mutez : @some : list operation : @storage
+        CAR;        # pair (address %farmAddress) (address %governorAddress) : @parameter%giveRewardAllowance : mutez : @some : list operation : @storage
+        CAR;        # address : @parameter%giveRewardAllowance : mutez : @some : list operation : @storage
+        PAIR %spender %value; # pair (address %spender) (@parameter%giveRewardAllowance %value) : mutez : @some : list operation : @storage
+        TRANSFER_TOKENS; # operation : list operation : @storage
+        CONS;       # list operation : @storage
+      }
+      {
+        IF_LEFT
+          {
+            SWAP;       # @storage : @parameter%revoke
+            # == revoke ==
+            # sp.verify(sp.sender == self.data.governorAddress, message = 'NOT_GOVERNOR') # @storage : @parameter%revoke
+            DUP;        # @storage : @storage : @parameter%revoke
+            DUG 2;      # @storage : @parameter%revoke : @storage
+            CAR;        # pair (address %farmAddress) (address %governorAddress) : @parameter%revoke : @storage
+            CDR;        # address : @parameter%revoke : @storage
+            SENDER;     # address : address : @parameter%revoke : @storage
+            COMPARE;    # int : @parameter%revoke : @storage
+            EQ;         # bool : @parameter%revoke : @storage
+            IF
+              {}
+              {
+                PUSH string "NOT_GOVERNOR"; # string : @parameter%revoke : @storage
+                FAILWITH;   # FAILED
+              }; # @parameter%revoke : @storage
+            # sp.transfer(sp.record(from_ = sp.self_address, to_ = self.data.revokeAddress, value = params), sp.tez(0), sp.contract(sp.TRecord(from_ = sp.TAddress, to_ = sp.TAddress, value = sp.TNat).layout(("from_ as from", ("to_ as to", "value"))), self.data.rewardTokenAddress, entry_point='transfer').open_some()) # @parameter%revoke : @storage
+            NIL operation; # list operation : @parameter%revoke : @storage
+            DUP 3;      # @storage : list operation : @parameter%revoke : @storage
+            GET 4;      # address : list operation : @parameter%revoke : @storage
+            CONTRACT %transfer (pair (address %from) (pair (address %to) (nat %value))); # option (contract (pair (address %from) (pair (address %to) (nat %value)))) : list operation : @parameter%revoke : @storage
+            IF_SOME
+              {}
+              {
+                PUSH int 33; # int : list operation : @parameter%revoke : @storage
+                FAILWITH;   # FAILED
+              }; # @some : list operation : @parameter%revoke : @storage
+            PUSH mutez 0; # mutez : @some : list operation : @parameter%revoke : @storage
+            DIG 3;      # @parameter%revoke : mutez : @some : list operation : @storage
+            DUP 5;      # @storage : @parameter%revoke : mutez : @some : list operation : @storage
+            GET 3;      # address : @parameter%revoke : mutez : @some : list operation : @storage
+            PAIR %to %value; # pair (address %to) (@parameter%revoke %value) : mutez : @some : list operation : @storage
+            SELF_ADDRESS; # address : pair (address %to) (@parameter%revoke %value) : mutez : @some : list operation : @storage
+            PAIR %from; # pair (address %from) (pair (address %to) (@parameter%revoke %value)) : mutez : @some : list operation : @storage
+            TRANSFER_TOKENS; # operation : list operation : @storage
+            CONS;       # list operation : @storage
+          }
+          {
+            SWAP;       # @storage : @parameter%setGovernorContract
+            # == setGovernorContract ==
+            # sp.verify(sp.sender == self.data.governorAddress, message = 'NOT_GOVERNOR') # @storage : @parameter%setGovernorContract
+            DUP;        # @storage : @storage : @parameter%setGovernorContract
+            DUG 2;      # @storage : @parameter%setGovernorContract : @storage
+            CAR;        # pair (address %farmAddress) (address %governorAddress) : @parameter%setGovernorContract : @storage
+            CDR;        # address : @parameter%setGovernorContract : @storage
+            SENDER;     # address : address : @parameter%setGovernorContract : @storage
+            COMPARE;    # int : @parameter%setGovernorContract : @storage
+            EQ;         # bool : @parameter%setGovernorContract : @storage
+            IF
+              {}
+              {
+                PUSH string "NOT_GOVERNOR"; # string : @parameter%setGovernorContract : @storage
+                FAILWITH;   # FAILED
+              }; # @parameter%setGovernorContract : @storage
+            SWAP;       # @storage : @parameter%setGovernorContract
+            # self.data.governorAddress = params # @storage : @parameter%setGovernorContract
+            UNPAIR;     # pair (address %farmAddress) (address %governorAddress) : pair (address %revokeAddress) (address %rewardTokenAddress) : @parameter%setGovernorContract
+            CAR;        # address : pair (address %revokeAddress) (address %rewardTokenAddress) : @parameter%setGovernorContract
+            DIG 2;      # @parameter%setGovernorContract : address : pair (address %revokeAddress) (address %rewardTokenAddress)
+            SWAP;       # address : @parameter%setGovernorContract : pair (address %revokeAddress) (address %rewardTokenAddress)
+            PAIR;       # pair address @parameter%setGovernorContract : pair (address %revokeAddress) (address %rewardTokenAddress)
+            PAIR;       # pair (pair address @parameter%setGovernorContract) (pair (address %revokeAddress) (address %rewardTokenAddress))
+            NIL operation; # list operation : pair (pair address @parameter%setGovernorContract) (pair (address %revokeAddress) (address %rewardTokenAddress))
+          }; # list operation : pair (pair address address) (pair (address %revokeAddress) (address %rewardTokenAddress))
+      }; # list operation : pair (pair address address) (pair (address %revokeAddress) (address %rewardTokenAddress))
+    NIL operation; # list operation : list operation : pair (pair address address) (pair (address %revokeAddress) (address %rewardTokenAddress))
+    SWAP;       # list operation : list operation : pair (pair address address) (pair (address %revokeAddress) (address %rewardTokenAddress))
+    ITER
+      {
+        CONS;       # list operation : pair (pair address address) (pair (address %revokeAddress) (address %rewardTokenAddress))
+      }; # list operation : pair (pair address address) (pair (address %revokeAddress) (address %rewardTokenAddress))
+    PAIR;       # pair (list operation) (pair (pair address address) (pair (address %revokeAddress) (address %rewardTokenAddress)))
+  };
