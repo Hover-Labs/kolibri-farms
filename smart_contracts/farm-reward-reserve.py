@@ -26,7 +26,7 @@ class FarmRewardReserve(sp.Contract):
       initialized = initialized,
     )
 
-  # Initialize. May only be called once.
+  # Initialize. May only be called once. May only be called by the governor.
   @sp.entry_point
   def initialize(self, farmAddress):
     sp.set_type(farmAddress, sp.TAddress)
@@ -41,7 +41,7 @@ class FarmRewardReserve(sp.Contract):
     self.data.initialized = True
     self.data.farmAddress = farmAddress
 
-  # Revoke the given number of tokens to the revoke address.
+  # Revoke the given number of tokens to the revoke address. May only be called by the governor.
   @sp.entry_point
   def revoke(self, amount):
     sp.set_type(amount, sp.TNat)
@@ -61,7 +61,7 @@ class FarmRewardReserve(sp.Contract):
     arg = sp.record(from_ = sp.self_address, to_ = self.data.revokeAddress, value = amount)
     sp.transfer(arg, sp.mutez(0), handle)
 
-  # Give the farm an award allowance.
+  # Give the farm an award allowance. May only be called by the governor.
   @sp.entry_point
   def giveRewardAllowance(self, amount):
     sp.set_type(amount, sp.TNat)
@@ -96,7 +96,6 @@ class FarmRewardReserve(sp.Contract):
     sp.verify(sp.sender == self.data.governorAddress, "NOT_GOVERNOR")
     self.data.governorAddress = newGovernorAddress
       
-
 ################################################################
 ################################################################
 # Tests
@@ -235,6 +234,41 @@ if __name__ == "__main__":
     # THEN the call fails
     revokeAmount = 500
     scenario += reserve.revoke(revokeAmount).run(
+      sender = Addresses.NULL_ADDRESS,
+      valid = False,
+    )
+
+  ################################################################
+  # setGovernorContract
+  ################################################################
+
+  @sp.add_test(name="setGovernorContract - can rotate governor")
+  def test():
+    scenario = sp.test_scenario()
+
+    # GIVEN a reserve contract
+    reserve = FarmRewardReserve()
+    scenario += reserve
+
+    # WHEN the governor is rotated
+    scenario += reserve.initialize(Addresses.ROTATED_ADDRESS).run(
+      sender = Addresses.GOVERNOR_ADDRESS
+    )
+
+    # THEN the address is rotated
+    scenario.verify(reserve.data.governorAddress == Addresses.ROTATED_ADDRESS)
+
+  @sp.add_test(name="setGovernorContract - fails if not called by governor")
+  def test():
+    scenario = sp.test_scenario()
+
+    # GIVEN a reserve contract
+    reserve = FarmRewardReserve()
+    scenario += reserve
+
+    # WHEN the governor is rotated by someone other than the governor.
+    # THEN the call fails.
+    scenario += reserve.initialize(Addresses.ROTATED_ADDRESS).run(
       sender = Addresses.NULL_ADDRESS,
       valid = False,
     )
