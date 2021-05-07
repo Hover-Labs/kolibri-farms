@@ -251,7 +251,7 @@ if __name__ == "__main__":
     scenario += reserve
 
     # WHEN the governor is rotated
-    scenario += reserve.initialize(Addresses.ROTATED_ADDRESS).run(
+    scenario += reserve.setGovernorContract(Addresses.ROTATED_ADDRESS).run(
       sender = Addresses.GOVERNOR_ADDRESS
     )
 
@@ -268,7 +268,7 @@ if __name__ == "__main__":
 
     # WHEN the governor is rotated by someone other than the governor.
     # THEN the call fails.
-    scenario += reserve.initialize(Addresses.ROTATED_ADDRESS).run(
+    scenario += reserve.setGovernorContract(Addresses.ROTATED_ADDRESS).run(
       sender = Addresses.NULL_ADDRESS,
       valid = False,
     )
