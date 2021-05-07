@@ -24,6 +24,9 @@ class FA12_core(sp.Contract):
     @sp.entry_point
     def approve(self, params):
         sp.set_type(params, sp.TRecord(spender = sp.TAddress, value = sp.TNat).layout(("spender", "value")))
+
+        self.addAddressIfNecessary(sp.sender)
+
         sp.verify(~self.is_paused())
         alreadyApproved = self.data.balances[sp.sender].approvals.get(params.spender, 0)
         sp.verify((alreadyApproved == 0) | (params.value == 0), "UnsafeAllowanceChange")

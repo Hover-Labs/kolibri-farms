@@ -161,6 +161,92 @@ if __name__ == "__main__":
     )    
 
   ################################################################
+  # giveRewardAllowance
+  ################################################################
+
+  @sp.add_test(name="giveRewardAllowance - can give allowance")
+  def test():
+    scenario = sp.test_scenario()
+
+    # GIVEN a token contract
+    token = FA12.FA12(
+      admin = Addresses.GOVERNOR_ADDRESS
+    )
+    scenario += token
+
+    # AND a reserve contract
+    reserve = FarmRewardReserve(
+      rewardTokenAddress = token.address,
+      revokeAddress = Addresses.REVOKE_ADDRESS,
+    )
+    scenario += reserve
+
+    # WHEN giveRewardAllowance is called
+    allowanceAmount = 500
+    scenario += reserve.giveRewardAllowance(allowanceAmount).run(
+      sender = Addresses.GOVERNOR_ADDRESS
+    )
+
+    # THEN an allowance is given.
+    scenario.verify(token.data.balances[reserve.address].approvals[Addresses.FARM_ADDRESS] == allowanceAmount)
+
+  @sp.add_test(name="giveRewardAllowance - can give allowance with existing allowance")
+  def test():
+    scenario = sp.test_scenario()
+
+    # GIVEN a token contract
+    token = FA12.FA12(
+      admin = Addresses.GOVERNOR_ADDRESS
+    )
+    scenario += token
+
+    # AND a reserve contract
+    reserve = FarmRewardReserve(
+      rewardTokenAddress = token.address,
+      revokeAddress = Addresses.REVOKE_ADDRESS,
+    )
+    scenario += reserve
+
+    # AND there's an existing allowance
+    token.approve(sp.record(spender = Addresses.FARM_ADDRESS, value = 123)).run(
+      sender = reserve.address
+    )
+
+    # WHEN giveRewardAllowance is called
+    allowanceAmount = 500
+    scenario += reserve.giveRewardAllowance(allowanceAmount).run(
+      sender = Addresses.GOVERNOR_ADDRESS
+    )
+
+    # THEN an allowance is given.
+    scenario.verify(token.data.balances[reserve.address].approvals[Addresses.FARM_ADDRESS] == allowanceAmount)
+
+  @sp.add_test(name="giveRewardAllowance - fails if not called by governor")
+  def test():
+    scenario = sp.test_scenario()
+
+    # GIVEN a token contract
+    token = FA12.FA12(
+      admin = Addresses.GOVERNOR_ADDRESS
+    )
+    scenario += token
+
+    # AND a reserve contract
+    reserve = FarmRewardReserve(
+      rewardTokenAddress = token.address,
+      revokeAddress = Addresses.REVOKE_ADDRESS,
+    )
+    scenario += reserve
+
+    # WHEN giveRewardAllowance is called by someone other than the governor
+    # THEN the call fails
+    allowanceAmount = 500
+    scenario += reserve.giveRewardAllowance(allowanceAmount).run(
+      sender = Addresses.NULL_ADDRESS, 
+      valid = False,
+    )
+   
+  ################################################################
   # revoke
   ################################################################
 
