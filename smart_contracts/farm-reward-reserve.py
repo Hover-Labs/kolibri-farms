@@ -6,14 +6,16 @@ import smartpy as sp
 ################################################################
 ################################################################
 
+Addresses = sp.import_script_from_url("file:./test-helpers/addresses.py")
+
 # Acts as a reward reserve for the Kolibri contracts.
 class FarmRewardReserve(sp.Contract):
   def __init__(
     self,
-    farmAddress = sp.address("tz1abmz7jiCV2GH2u81LRrGgAFFgvQgiDiaf"),
-    governorAddress = sp.address("tz1abmz7jiCV2GH2u81LRrGgAFFgvQgiDiaf"),
-    revokeAddress = sp.address("tz1abmz7jiCV2GH2u81LRrGgAFFgvQgiDiaf"),
-    rewardTokenAddress = sp.address("tz1abmz7jiCV2GH2u81LRrGgAFFgvQgiDiaf"),
+    farmAddress = Addresses.FARM_ADDRESS,
+    governorAddress = Addresses.GOVERNOR_ADDRESS,
+    revokeAddress = Addresses.REVOKE_ADDRESS,
+    rewardTokenAddress = Addresses.REWARD_TOKEN_ADDRESS,
     initialized = False,
   ):
     self.init(
@@ -104,12 +106,58 @@ class FarmRewardReserve(sp.Contract):
 # Only run tests if this file is main.
 if __name__ == "__main__":
 
-  @sp.add_test(name="test - compiles")
+  ################################################################
+  # initialize
+  ################################################################
+
+  @sp.add_test(name="initialize - can initialize")
   def test():
     scenario = sp.test_scenario()
+
+    # GIVEN a reserve contract
     reserve = FarmRewardReserve()
     scenario += reserve
 
+    # WHEN it is initialized
+    scenario += reserve.initialize(Addresses.ROTATED_ADDRESS).run(
+      sender = Addresses.GOVERNOR_ADDRESS
+    )
+
+    # THEN the contract is initialized
+    scenario.verify(reserve.data.farmAddress == Addresses.ROTATED_ADDRESS)
+    scenario.verify(reserve.data.initialized == True)
+
+  @sp.add_test(name="initialize - fails if not called by governor")
+  def test():
+    scenario = sp.test_scenario()
+
+    # GIVEN a reserve contract
+    reserve = FarmRewardReserve()
+    scenario += reserve
+
+    # WHEN initialize is called by someone other than the governor
+    # THEN the call fails.
+    scenario += reserve.initialize(Addresses.ROTATED_ADDRESS).run(
+      sender = Addresses.NULL_ADDRESS,
+      valid = False
+    )
+
+  @sp.add_test(name="initialize - fails if already initialized")
+  def test():
+    scenario = sp.test_scenario()
+
+    # GIVEN a reserve contract which is already initialized
+    reserve = FarmRewardReserve(
+      initialized = True
+    )
+    scenario += reserve
+
+    # WHEN initialize is called
+    # THEN the call fails.
+    scenario += reserve.initialize(Addresses.ROTATED_ADDRESS).run(
+      sender = Addresses.GOVERNOR_ADDRESS,
+      valid = False
+    )    
 
   sp.add_compilation_target("farm-reward-reserve", FarmRewardReserve())
 

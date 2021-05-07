@@ -31,7 +31,7 @@ code
             IF_SOME
               {}
               {
-                PUSH int 72; # int : list operation : @parameter%giveRewardAllowance : @storage
+                PUSH int 73; # int : list operation : @parameter%giveRewardAllowance : @storage
                 FAILWITH;   # FAILED
               }; # @some : list operation : @parameter%giveRewardAllowance : @storage
             PUSH mutez 0; # mutez : @some : list operation : @parameter%giveRewardAllowance : @storage
@@ -49,7 +49,7 @@ code
             IF_SOME
               {}
               {
-                PUSH int 72; # int : list operation : @parameter%giveRewardAllowance : @storage
+                PUSH int 73; # int : list operation : @parameter%giveRewardAllowance : @storage
                 FAILWITH;   # FAILED
               }; # @some : list operation : @parameter%giveRewardAllowance : @storage
             PUSH mutez 0; # mutez : @some : list operation : @parameter%giveRewardAllowance : @storage
@@ -133,7 +133,7 @@ code
             IF_SOME
               {}
               {
-                PUSH int 51; # int : list operation : @parameter%revoke : @storage
+                PUSH int 52; # int : list operation : @parameter%revoke : @storage
                 FAILWITH;   # FAILED
               }; # @some : list operation : @parameter%revoke : @storage
             PUSH mutez 0; # mutez : @some : list operation : @parameter%revoke : @storage
