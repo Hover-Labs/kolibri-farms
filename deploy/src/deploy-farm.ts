@@ -12,7 +12,7 @@ const logLevel = 'info'
 const nodeUrl = "https://rpctest.tzbeta.net"
 
 const governorAddress = 'tz1KoLibimdjUSfhrSpXwx4FhhhCq1JM5Etk'
-const depositToken = 'KT1L8zmG4ZwibgJwJxYZGJsjJeM7VA8qWEao'
+const depositToken = 'KT1KTAsdBYiRJiNivASPVcnpbTuNtCeXA5SQ'
 const rewardToken = 'KT18yyUYL7U9eGfjukKqhY9THqugmh1oW6Fh'
 const rewardAmount = new BigNumber('123456789')
 const rewardPerBlock = new BigNumber('10')
@@ -81,7 +81,7 @@ const deploy = async (): Promise<void> => {
   console.log('------------------------------------------------------')
   console.log('')
 
-  console.log('>>> [1/2] Deploying Farm Reserve')
+  console.log('>>> [1/2] Deploying Reserve')
   counter++
   const reserveStorage = `(Pair (Pair "${keystore.publicKeyHash}" "${keystore.publicKeyHash}") (Pair False (Pair "${revokeAddress}" "${rewardToken}")))`
   const reserveDeployResult = await deployContract(
@@ -93,7 +93,7 @@ const deploy = async (): Promise<void> => {
   )
   console.log('')
 
-  console.log('>>> [2/2] Deploying Farm Reserve')
+  console.log('>>> [2/2] Deploying Farm')
   counter++
   const farmStorage = `(Pair (Pair (Pair (Pair "${keystore.publicKeyHash}" "${depositToken}") (Pair "${reserveDeployResult.contractAddress}" "${rewardToken}")) {})(Pair            (Pair              (Pair 0                    (Pair 0 0))  (Pair 0 (Pair 0 0))) 0))`
   const farmStorageMicheline = TezosLanguageUtil.translateMichelsonToMicheline(farmStorage)
