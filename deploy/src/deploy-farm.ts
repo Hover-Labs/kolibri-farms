@@ -15,7 +15,7 @@ const governorAddress = 'tz1KoLibimdjUSfhrSpXwx4FhhhCq1JM5Etk'
 const depositToken = 'KT1KTAsdBYiRJiNivASPVcnpbTuNtCeXA5SQ'
 const rewardToken = 'KT18yyUYL7U9eGfjukKqhY9THqugmh1oW6Fh'
 const rewardAmount = new BigNumber('123456789')
-const rewardPerBlock = new BigNumber('10')
+const rewardPerBlock = new BigNumber('10000000000000000000')
 const totalBlocks = new BigNumber('10000')
 const revokeAddress = 'KT1Xs55s9K13LAwaQKcieEQWy2TjzZPw8idc'
 
