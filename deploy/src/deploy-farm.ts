@@ -11,7 +11,7 @@ const privateKey = process.env[privateKeyName]
 const logLevel = 'info'
 const nodeUrl = "https://testnet-tezos.giganode.io"
 
-const governorAddress = 'KT1VbeBu9m5PnPxroSomV7yhd2EhbPkzVnLA'
+const governorAddress = 'KT1T65DPYCT6okmvVok1Wu8oeC4bJo1MsNsg'
 const depositToken = 'KT1TYGatFGXccm23ctedPScmkJZQjUN8n4iK'
 const rewardToken = 'KT1SUgtawQ6DbXamPN79wXCoJ5TinveRaDar'
 
@@ -19,7 +19,7 @@ const rewardAmount = new BigNumber('37500000000000000000000')
 
 const rewardPerBlock = new BigNumber('232514881000000000')
 const totalBlocks = new BigNumber('161280')
-const revokeAddress = 'KT1UDLW4wPAMRj6KY4MaKcJUiP1bKWVFZJ2v'
+const revokeAddress = 'KT1AJHX385bqnJCVpz7YLUicuMhnXPkU3Gpz'
 
 const deploy = async (): Promise<void> => {
   console.log('------------------------------------------------------')
@@ -152,7 +152,7 @@ const deploy = async (): Promise<void> => {
   console.log('')
 
   console.log(`Farm: ${farmDeployResult.contractAddress} / ${farmDeployResult.operationHash}`)
-  console.log(`Farm: ${reserveDeployResult.contractAddress} / ${reserveDeployResult.operationHash}`)
+  console.log(`Reserve: ${reserveDeployResult.contractAddress} / ${reserveDeployResult.operationHash}`)
   console.log(``)
 
 }
