@@ -9,15 +9,17 @@ const privateKey = process.env[privateKeyName]
 
 // Configuration
 const logLevel = 'info'
-const nodeUrl = "https://rpctest.tzbeta.net"
+const nodeUrl = "https://testnet-tezos.giganode.io"
 
-const governorAddress = 'tz1KoLibimdjUSfhrSpXwx4FhhhCq1JM5Etk'
-const depositToken = 'KT1L8zmG4ZwibgJwJxYZGJsjJeM7VA8qWEao'
-const rewardToken = 'KT18yyUYL7U9eGfjukKqhY9THqugmh1oW6Fh'
-const rewardAmount = new BigNumber('123456789')
-const rewardPerBlock = new BigNumber('10')
-const totalBlocks = new BigNumber('10000')
-const revokeAddress = 'KT1Xs55s9K13LAwaQKcieEQWy2TjzZPw8idc'
+const governorAddress = 'KT1VbeBu9m5PnPxroSomV7yhd2EhbPkzVnLA'
+const depositToken = 'KT1TYGatFGXccm23ctedPScmkJZQjUN8n4iK'
+const rewardToken = 'KT1SUgtawQ6DbXamPN79wXCoJ5TinveRaDar'
+
+const rewardAmount = new BigNumber('37500000000000000000000')
+
+const rewardPerBlock = new BigNumber('232514881000000000')
+const totalBlocks = new BigNumber('161280')
+const revokeAddress = 'KT1UDLW4wPAMRj6KY4MaKcJUiP1bKWVFZJ2v'
 
 const deploy = async (): Promise<void> => {
   console.log('------------------------------------------------------')
@@ -120,7 +122,7 @@ const deploy = async (): Promise<void> => {
 
   console.log('>>> [2/6] Transferring tokens to reserve')
   counter++
-  await sendOperation(rewardToken, 'transfer', `Pair "${keystore.publicKeyHash}" (Pair "${reserveDeployResult.contractAddress}" ${rewardAmount})`, keystore, counter, nodeUrl)
+  await sendOperation(rewardToken, 'transfer', `Pair "${keystore.publicKeyHash}" (Pair "${reserveDeployResult.contractAddress}" ${rewardAmount.toFixed()})`, keystore, counter, nodeUrl)
   console.log('')
 
   console.log('>>> [3/6] Asking reserve to give farm an allowance')
