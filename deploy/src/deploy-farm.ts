@@ -95,7 +95,7 @@ const deploy = async (): Promise<void> => {
   )
   console.log('')
 
-  console.log('>>> [2/2] Deploying Farm Reserve')
+  console.log('>>> [2/2] Deploying Farm')
   counter++
   const farmStorage = `(Pair (Pair (Pair (Pair "${keystore.publicKeyHash}" "${depositToken}") (Pair "${reserveDeployResult.contractAddress}" "${rewardToken}")) {})(Pair            (Pair              (Pair 0                    (Pair 0 0))  (Pair 0 (Pair 0 0))) 0))`
   const farmStorageMicheline = TezosLanguageUtil.translateMichelsonToMicheline(farmStorage)
